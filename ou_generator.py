@@ -18,14 +18,14 @@ class OrganizationalUnit:
 
         # Recursively generate children with decreasing probability for each depth level
         if depth < max_depth - 1 and random.random() < 0.7:
-            num_children = random.randint(1, 2)
+            num_children = random.randint(1, 3)
             for i in range(num_children):
                 child = OrganizationalUnit(random_word(), depth + 1, max_depth, parent=self)
                 self.children.append(child)
 
     def flatten(self):
         """Return a flattened version of this OrganizationalUnit as a dictionary."""
-        flattened = {"Name": self.name}
+        flattened = {"OUName": self.name}
 
         # Add parent names for up to max_depth levels
         for i in range(1, self.max_depth):
@@ -45,8 +45,11 @@ class OrganizationalUnit:
             ancestors.append(self.parent)
         return ancestors
 
-
-def generate_organization_structure(root_name, num_children, max_depth, current_depth=0):
+# Важное уточнение: current_depth должно равняться 1, а не 0, так функция сгенерирует верное количество каталогов
+# Если будет стоять 0, то столбцов в итоговом CSV будет ровно столько, сколько указано в max_depth,
+# и при этом не учитывается наличие первого столбца Name, и в строках с самыми нижними OU в иерархии
+# не будет указано имя корня (домена). Если стоит 1, то все нормально.
+def generate_organization_structure(root_name, num_children, max_depth, current_depth=1):
     """Generate a random organizational unit structure."""
     root = OrganizationalUnit(root_name, current_depth, max_depth)
     open_nodes = [root]
@@ -69,7 +72,7 @@ def generate_organization_structure(root_name, num_children, max_depth, current_
 def write_csv(filename, root):
     """Write the organizational unit structure to a CSV file."""
     with open(filename, "w", newline="", encoding="utf-8") as f:
-        fieldnames = ["Name"] + [f"Parent {i}" for i in range(1, root.max_depth)]
+        fieldnames = ["OUName"] + [f"Parent {i}" for i in range(1, root.max_depth)]
         writer = csv.DictWriter(f, delimiter=";", fieldnames=fieldnames)
         writer.writeheader()
 
@@ -82,7 +85,7 @@ def write_csv(filename, root):
 
 
 if __name__ == "__main__":
-    num_children = 3
-    max_depth = 5
-    structure = generate_organization_structure("ROOT", num_children, max_depth)
+    num_children = 5
+    max_depth = 7
+    structure = generate_organization_structure("DC=domain,DC=local", num_children, max_depth)
     write_csv("ou_structure.csv", structure)

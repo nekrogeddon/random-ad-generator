@@ -1,9 +1,8 @@
 import csv
 import random
-import string
 
 # Define the number of GPNGroups to add to Organizational Units
-totalgroups = 100
+totalgroups = 1000
 
 # Read the CSV file into a list of dictionaries
 with open('ou_structure.csv', newline='') as f:
@@ -12,11 +11,11 @@ with open('ou_structure.csv', newline='') as f:
 
 # Create a new list of dictionaries with added GPNGroups
 newdata = []
-for row in data:
+for i, row in enumerate(data):
     # Generate a random number of groups to add to this OU
     numgroups = random.randint(10, totalgroups)
-    # Generate random group names
-    groupnames = ['GPNGroup' + ''.join(random.choices(string.ascii_uppercase + string.digits, k=5)) for i in range(numgroups)]
+    # Generate group names with GPNGroup and a number
+    groupnames = [f"GPNGroup{i + 1}-{j}" for j in range(1, numgroups + 1)]
     # Add the group names to the dictionary and append to the new list
     for groupname in groupnames:
         newrow = {'Group': groupname}

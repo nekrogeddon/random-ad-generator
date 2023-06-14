@@ -11,16 +11,18 @@ with open('ou_structure.csv', newline='') as f:
 
 # Create a new list of dictionaries with added GPNGroups
 newdata = []
-for i, row in enumerate(data):
+count = 1
+for row in data:
     # Generate a random number of groups to add to this OU
-    numgroups = random.randint(10, totalgroups)
+    numgroups = random.randint(1, totalgroups)
     # Generate group names with GPNGroup and a number
-    groupnames = [f"GPNGroup{i + 1}-{j}" for j in range(1, numgroups + 1)]
+    groupnames = [f"GPNGroup{count + i}" for i in range(numgroups)]
     # Add the group names to the dictionary and append to the new list
     for groupname in groupnames:
         newrow = {'Group': groupname}
         newrow.update(row)
         newdata.append(newrow)
+    count += numgroups
 
 # Write the new list of dictionaries to a CSV file with Group as the first column
 with open('ou_structure_with_groups.csv', 'w', newline='') as f:
